@@ -97,3 +97,19 @@
             (locally (declare (#+sbcl sb-ext:muffle-conditions t))
               (return (values decoded-value counter)))))))
 
+(defzigzag 32 zz32e zz32d)
+(defzigzag 64 zz64e zz64d)
+
+(defun zig-zag-varint-decode (n)
+  (ecase n
+    (32 (lambda (stream)
+          (multiple-value-bind (val count) (varint-decode-32 stream)
+            (values (zz32d val) count))))
+    (64 (lambda (stream)
+          (multiple-value-bind (val count) (varint-decode-64 stream)
+            (values (zz64d val) count))))))
+
+(defun zig-zag-varint-encode (n)
+  (ecase n
+    (32 (lambda (value stream) (varint-encode-32 (zz32e value) stream)))
+    (64 (lambda (value stream) (varint-encode-64 (zz64e value) stream)))))

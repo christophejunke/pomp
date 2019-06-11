@@ -35,30 +35,30 @@
   (data 0
         :type (eval
                (ecase type
-                 (:signed-byte '(signed-byte 8)) 
-                 (:unsigned-byte '(unsigned-byte 8)) 
-                 (:signed-short '(signed-byte 16)) 
-                 (:unsigned-short '(unsigned-byte 16)) 
+                 (:signed-byte '(signed-byte 8))
+                 (:unsigned-byte '(unsigned-byte 8))
+                 (:signed-short '(signed-byte 16))
+                 (:unsigned-short '(unsigned-byte 16))
                  (:signed-zig-varint '(custom
                                        :reader (zig-zag-varint-decode 32)
                                        :writer (zig-zag-varint-encode 32)
-                                       :lisp-type (sb 32))) 
+                                       :lisp-type (sb 32)))
                  (:unsigned-varint '(custom
                                      :reader 'varint-decode-32
                                      :writer 'varint-encode-32
-                                     :lisp-type (unsigned-byte 32))) 
+                                     :lisp-type (unsigned-byte 32)))
                  (:signed-zig-varlong '(custom
                                         :reader (zig-zag-varint-decode 64)
                                         :writer (zig-zag-varint-encode 64)
-                                        :lisp-type (sb 64))) 
+                                        :lisp-type (sb 64)))
                  (:unsigned-varlong '(custom
                                       :reader 'varint-decode-64
                                       :writer 'varint-encode-64
-                                      :lisp-type (unsigned-byte 64))) 
-                 (:ascii '(terminated-string 1)) 
-                 (:buffer 'pomp-buffer)                
-                 (:single-float 'single-float) 
-                 (:double-float 'double-float) 
+                                      :lisp-type (unsigned-byte 64)))
+                 (:ascii '(terminated-string 1))
+                 (:buffer 'pomp-buffer)
+                 (:single-float 'single-float)
+                 (:double-float 'double-float)
                  (:file-descriptor '(unsigned-byte 32))))))
 
 ;; HELPER
@@ -101,18 +101,18 @@
 ;; TEST
 
 (let* ((arguments (list
-                   (argument :signed-byte 127) 
-                   (argument :unsigned-byte 255) 
-                   (argument :signed-short -10201) 
-                   (argument :unsigned-short 4000) 
-                   (argument :signed-zig-varint -75000) 
-                   (argument :unsigned-varint 32010) 
-                   (argument :signed-zig-varlong -50505050505050) 
-                   (argument :unsigned-varlong 10000000000999484838) 
-                   (argument :ascii "AZERTYUIOP") 
-                   (argument :buffer (buffer #(10 0 30 0 50 10 20)))                
-                   (argument :single-float 1e9) 
-                   (argument :double-float pi) 
+                   (argument :signed-byte 127)
+                   (argument :unsigned-byte 255)
+                   (argument :signed-short -10201)
+                   (argument :unsigned-short 4000)
+                   (argument :signed-zig-varint -75000)
+                   (argument :unsigned-varint 32010)
+                   (argument :signed-zig-varlong -50505050505050)
+                   (argument :unsigned-varlong 10000000000999484838)
+                   (argument :ascii "AZERTYUIOP")
+                   (argument :buffer (buffer #(10 0 30 0 50 10 20)))
+                   (argument :single-float 1e9)
+                   (argument :double-float pi)
                    (argument :file-descriptor 53)))
        (message (make-message 64 arguments)))
   (multiple-value-bind (id args) (decode-message message)
@@ -124,4 +124,3 @@
                       250 1 7 179 253 193 249 227 251 22 8 166 219 235 171 204 224 200 227 138 1 9
                       65 90 69 82 84 89 85 73 79 80 0 10 7 10 0 30 0 50 10 20 11 40 107 110 78 12
                       24 45 68 84 251 33 9 64 13 53 0 0 0)))))
-
