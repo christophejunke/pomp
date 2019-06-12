@@ -1,5 +1,8 @@
 (defsystem pomp
-  :depends-on (varint lisp-binary flexi-streams)
+  :depends-on (lisp-binary flexi-streams)
   :components ((:file "package")
-               (:file "pomp-utils")
+               (:file "utils")
+               (:file "macros")
+               (:file "encoding")
+               (:file "binary")
                (:file "pomp")))
