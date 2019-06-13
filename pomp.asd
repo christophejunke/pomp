@@ -5,4 +5,5 @@
                (:file "macros")
                (:file "encoding")
                (:file "binary")
-               (:file "pomp")))
+               (:file "pomp")
+               (:file "format")))
