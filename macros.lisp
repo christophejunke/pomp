@@ -27,13 +27,14 @@
         (with-gensyms (stream decoded byte counter position more value)
           `(locally (declare #+sbcl (sb-ext:muffle-conditions sb-ext:compiler-note))
              (declaim (inline ,encoder ,decoder))
+
              (defun ,encoder (,value ,stream)
                (check-type ,value (ub ,size))
                (let ((,counter 0)
                      (,byte 0)
                      (,more))
-                 (declare (type (integer 0 ,(ceiling size 7)) ,counter)
-                          (type (ub 8) ,byte)
+                 (declare (type (integer 0 ,ceiling) ,counter)
+                          (type u8 ,byte)
                           (optimize ,@qualities))
                  (loop
                    (setf ,byte (ldb (byte 7 0) ,value))
@@ -45,8 +46,9 @@
                    (incf ,counter)
                    (unless ,more
                      (return ,counter)))))
+
              (defun ,decoder (,stream &aux (,decoded 0) (,byte 0))
-               (declare (type (ub 8) ,byte)
+               (declare (type u8 ,byte)
                         (type (ub ,size) ,decoded)
                         (optimize ,@qualities))
                (do ((,counter 1 (+ 1 ,counter))
