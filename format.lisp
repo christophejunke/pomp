@@ -1,5 +1,33 @@
 (in-package :pomp)
 
+(defun token-as-types (list)
+  (destructuring-bind (tag &optional arg) list
+    (ecase tag
+      (:buffer
+       (values tag '(simple-array (ub 8) (*))))
+      (:file-descriptor
+       (values tag '(ub 32)))
+      (:single
+       (values :single-float 'single-float))
+      (:double
+       (values :double-float 'double-float))
+      (:signed
+       (values (ecase arg
+                 (8 :signed-byte)
+                 (16 :signed-short)
+                 (32 :signed-zig-varint)
+                 (64 :signed-zig-varlong))
+               `(sb ,arg)))
+      (:unsigned
+       (values (ecase arg
+                 (8 :unsigned-byte)
+                 (16 :unsigned-short)
+                 (32 :unsigned-varint)
+                 (64 :unsigned-varlong))
+               `(ub ,arg)))
+      ((:malloc-string :string)
+       (values :ascii 'simple-string)))))
+
 (defun map-tokens (function pomp-format-string)
   (let ((size 32)
         (counter 0)
