@@ -142,3 +142,21 @@
                      (subseq pomp-format-string start)
                      start
                      pomp-format-string))))))
+
+(defmacro do-tokens ((token string &optional result) &body body)
+  (with-gensyms (list rest)
+    `(block nil
+       (map-tokens
+        ,(etypecase token
+           (null `(lambda (,list) (declare (ignore ,list)) ,@body))
+           (symbol `(lambda (,token) ,@body))
+           (cons (destructuring-bind (token &optional arg) token
+                   `(lambda (,list)
+                      (destructuring-bind (,token ,@(if arg
+                                                        `(&optional ,arg)
+                                                        `(&rest ,rest)))
+                          ,list
+                        ,@(unless arg `((declare (ignore ,rest))))
+                        ,@body)))))
+        ,string)
+       ,result)))

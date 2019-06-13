@@ -1,5 +1,25 @@
 (in-package :pomp)
 
+
+(assert (= 3 (let ((c 0))
+               (do-tokens (nil "%d%u%hhd" c)
+                 (incf c)))))
+
+(do-tokens (tok "%d%u%hhd")
+  (assert (consp tok)))
+
+(do-tokens ((tok) "%d%u%hhd")
+  (assert (keywordp tok)))
+
+(do-tokens ((tok arg) "%d%u%hhd")
+  (check-type tok keyword)
+  (check-type arg (member 8 16 32 64 nil)))
+
+(do-tokens (token "%d")
+  (multiple-value-bind (btype ltype) (token-as-types token)
+    (print btype)
+    (print ltype)))
+
 (defun test-varint ()
   (time
    (dotimes (i 10000)
