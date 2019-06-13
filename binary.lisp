@@ -30,7 +30,7 @@
                  :lisp-type (unsigned-byte 32)))
   (bytes #() :type (simple-array (unsigned-byte 8) (size))))
 
-(defbinary pomp-argument (:export t)
+(defbinary pomp-argument ()
   (type :buffer
         :type pomp-argument-type)
   (data 0 :type (eval
