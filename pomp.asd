@@ -1,5 +1,5 @@
 (defsystem pomp
-  :depends-on (lisp-binary flexi-streams)
+  :depends-on (lisp-binary flexi-streams :iolib)
   :components ((:file "package")
                (:file "utils")
                (:file "macros")

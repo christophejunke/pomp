@@ -1,0 +1,10 @@
+POMP> (make-instance 'iomux:event-base :mux 'iomux:select-multiplexer)
+#<event base, 0 FDs monitored, using: #<select(2) multiplexer> {1003A7F4E3}>
+POMP> (iolib/multiplex:add-timer * (lambda (&rest args) (print `(:ok ,@args))) 5 :one-shot t)
+#<TIMER "(unnamed)", Timeout: [ 5 , 220308.432208757d0 ], one-shot>
+POMP> (iomux:event-dispatch #<event base, 0 FDs monitored, using: #<select(2) multiplexer> {1003A7F4E3}>)
+
+(:OK)
+
+;;; BLOCKING
+; No value; Evaluation aborted on NIL.
