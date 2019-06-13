@@ -1,7 +1,7 @@
 (in-package :pomp)
 
-(defun token-as-types (list)
-  (destructuring-bind (tag &optional arg) list
+(defun token-as-types (token)
+  (destructuring-bind (tag &optional arg) (ensure-list token)
     (ecase tag
       (:buffer
        (values tag '(simple-array (ub 8) (*))))
