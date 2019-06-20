@@ -46,7 +46,7 @@
                      (argument :unsigned-varint 32010)
                      (argument :signed-zig-varlong -50505050505050)
                      (argument :unsigned-varlong 10000000000999484838)
-                     (argument :ascii "AZERTYUIOP")
+                     (argument :ascii (ascii "AZERTYUIOP"))
                      (argument :buffer (buffer #(10 0 30 0 50 10 20)))
                      (argument :single-float 1e9)
                      (argument :double-float pi)
@@ -57,7 +57,8 @@
       (assert (equalp args arguments))
       (assert (equalp (with-output-to-sequence (stream)
                         (write-binary (make-message id args) stream))
-                      #(80 79 77 80 64 0 0 0 89 0 0 0 1 127 2 255 3 39 216 4 160 15 5 239 147 9 6 138
-                        250 1 7 179 253 193 249 227 251 22 8 166 219 235 171 204 224 200 227 138 1 9
-                        65 90 69 82 84 89 85 73 79 80 0 10 7 10 0 30 0 50 10 20 11 40 107 110 78 12
-                        24 45 68 84 251 33 9 64 13 53 0 0 0))))))
+                      #(80 79 77 80 64 0 0 0 90 0 0 0 1 127 2 255 3 39 216 4 160 15 5
+                        239 147 9 6 138 250 1 7 179 253 193 249 227 251 22 8 166 219
+                        235 171 204 224 200 227 138 1 9 11 65 90 69 82 84 89 85 73 79
+                        80 0 10 7 10 0 30 0 50 10 20 11 40 107 110 78 12 24 45 68 84
+                        251 33 9 64 13 53 0 0 0))))))
