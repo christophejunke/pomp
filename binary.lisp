@@ -30,6 +30,13 @@
                  :lisp-type (unsigned-byte 32)))
   (bytes #() :type (simple-array (unsigned-byte 8) (size))))
 
+(defbinary str ()
+  (size 0 :type (custom
+                 :reader '%varint16d
+                 :writer '%varint16e
+                 :lisp-type (unsigned-byte 16)))
+  (text "" :type (terminated-string 1 :terminator 0)))
+
 (defbinary pomp-argument ()
   (type :buffer
         :type pomp-argument-type)
@@ -55,7 +62,7 @@
                                         :reader '%varint64d
                                         :writer '%varint64e
                                         :lisp-type (unsigned-byte 64)))
-                   (:ascii '(terminated-string 1))
+                   (:ascii 'str)
                    (:buffer 'pomp-buffer)
                    (:single-float 'single-float)
                    (:double-float 'double-float)

@@ -22,13 +22,17 @@
 (defmacro define-varint-functions (size encoder decoder)
   (let ((qualities '((speed 3) (debug 0) (safety 0) (compilation-speed 0))))
     (multiple-value-bind (ceiling neg) (ceiling size 7)
-      (let ((remaining (+ 7 neg))
-            (multiple (* 7 (1- ceiling))))
+      (let ((remaining (+ 7 neg)) (multiple (* 7 (1- ceiling))))
         (with-gensyms (stream decoded byte counter position more value)
-          `(locally (declare #+sbcl (sb-ext:muffle-conditions sb-ext:compiler-note))
+          `(locally
+               (declare #+sbcl
+                        (sb-ext:muffle-conditions sb-ext:compiler-note))
              (declaim (inline ,encoder ,decoder))
 
              (defun ,encoder (,value ,stream)
+               ,(format nil
+                        "Variable-length encoder of ~d bits VALUE to STREAM."
+                        size)
                (check-type ,value (ub ,size))
                (let ((,counter 0)
                      (,byte 0)
@@ -48,6 +52,12 @@
                      (return ,counter)))))
 
              (defun ,decoder (,stream &aux (,decoded 0) (,byte 0))
+               ,(format nil
+                        "Variable-length decoder for ~d bits values ~
+                         from STREAM.~%~%~
+                         Returns the numbers of bytes read from STREAM ~
+                         as a secondary return value."
+                        size)
                (declare (type u8 ,byte)
                         (type (ub ,size) ,decoded)
                         (optimize ,@qualities))

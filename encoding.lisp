@@ -10,6 +10,7 @@
 ;; variable length encoding of unsigned values
 ;;
 
+(define-varint-functions 16 %varint16e %varint16d)
 (define-varint-functions 32 %varint32e %varint32d)
 (define-varint-functions 64 %varint64e %varint64d)
 

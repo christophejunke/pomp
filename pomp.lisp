@@ -4,6 +4,9 @@
   (make-pomp-buffer :size (length elements)
                     :bytes (make-bytes elements)))
 
+(defun ascii (string)
+  (make-str :size (1+ (length string)) :text string))
+
 (defun argument (type data)
   (make-pomp-argument :type type :data data))
 
