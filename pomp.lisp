@@ -43,6 +43,7 @@
   (make-message-using-payload id (make-payload arguments)))
 
 (defun decode-message (message)
-  (values (pomp-message-id message)
-          (decode-payload (pomp-message-payload message))))
+  (values
+   (decode-payload (pomp-message-payload message))
+   (pomp-message-id message)))
 
