@@ -65,6 +65,7 @@
 
                (augment-prefix ()
                  (incf counter)
+                 (assert (<= counter 2) () "Too many prefix characters.")
                  (setf modifier (clamp (* modifier factor) 1/4 2)))
 
                (token (&rest token)
@@ -99,8 +100,7 @@
 
                (state/long (c)
                  (ecase c
-                   (#\l (augment-prefix)
-                        (assert (<= counter 2) () "Too many prefix characters."))
+                   (#\l (augment-prefix))
                    ((#\i #\d) (token :signed (size-for-prefix)))
                    (#\u (token :unsigned (size-for-prefix)))
                    ((#\f #\F #\g #\G #\e #\E)
