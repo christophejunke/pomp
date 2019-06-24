@@ -45,20 +45,23 @@
                  (augment-prefix)
                  (setf state next-state))
 
-               (expect (expected &key then because)
+               (expect (chars token &aux (stack (coerce chars 'list)))
+                 (assert stack)
                  (setf state
-                       (lambda (char)
+                       (lambda (char &aux (expected (pop stack)))
                          (assert (char= char expected)
                                  ()
                                  "Unexpected char ~s in place of ~s~
                                ~@[ ~a~]."
                                  char
                                  expected
-                                 (case because
-                                   (:buffer "in buffer format (%p%u)")))
-                         (etypecase then
-                           (keyword (token then))
-                           (function (setf state then))))))
+                                 (case token
+                                   (:buffer
+                                    "in buffer format (%p%u)")
+                                   (:malloc-string
+                                    "in malloc-string format (%m%s)")))
+                         (unless stack
+                           (token token)))))
 
                (augment-prefix ()
                  (incf counter)
@@ -84,18 +87,9 @@
                    (#\u (token :unsigned size))
                    ((#\f #\F #\g #\G #\e #\E) (token :single))
                    (#\s (token :string))
-                   (#\m (setf state #'state/string))
-                   (#\p (setf state
-                              (expect #\%
-                                      :then (expect #\u
-                                                    :then :buffer
-                                                    :because :buffer)
-                                      :because :buffer)))
+                   (#\m (setf state (expect "%s" :malloc-string)))
+                   (#\p (setf state (expect "%u" :buffer)))
                    (#\x (token :file-descriptor))))
-
-               (state/string (c)
-                 (ecase c
-                   (#\s (token :malloc-string))))
 
                (state/half (c)
                  (ecase c
@@ -106,7 +100,7 @@
                (state/long (c)
                  (ecase c
                    (#\l (augment-prefix)
-                    (assert (<= counter 2) () "Too many prefix characters."))
+                        (assert (<= counter 2) () "Too many prefix characters."))
                    ((#\i #\d) (token :signed (size-for-prefix)))
                    (#\u (token :unsigned (size-for-prefix)))
                    ((#\f #\F #\g #\G #\e #\E)
@@ -121,9 +115,9 @@
                    (#\%
                     (setf state #'state/dispatch)))))
         (loop
-          initially (setf state #'state/%)
-          for char across pomp-format-string
-          do (incf position)
+           initially (setf state #'state/%)
+           for char across pomp-format-string
+           do (incf position)
              (handler-case (funcall state char)
                (error (condition)
                  ;; Any error caught here is a parsing error.
@@ -134,7 +128,7 @@
                   (list pomp-format-string
                         position)
                   condition)))
-          finally
+           finally
              (assert (eq state #'state/%)
                      ()
                      "Not enough input for sequence ~s started at ~
