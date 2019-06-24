@@ -10,6 +10,16 @@
 (defun argument (type data)
   (make-pomp-argument :type type :data data))
 
+(defgeneric make-argument-form-for (type expression)
+  (:method ((type (eql :ascii)) expression)
+    `(ascii ,expression))
+  (:method ((type (eql :buffer)) expression)
+    `(buffer ,expression))
+  (:method (type expression) expression))
+
+(defun make-argument-form (type expression)
+  `(argument ,type ,(make-argument-form-for type expression)))
+
 (defun argument-encode (type data)
   (with-output-to-sequence (o)
     (write-binary (argument type data) o)))
