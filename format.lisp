@@ -157,3 +157,7 @@
                         ,@body)))))
         ,string)
        ,result)))
+
+(defun tokens (format &aux tokens)
+  (do-tokens (token format (nreverse tokens))
+    (push token tokens)))
