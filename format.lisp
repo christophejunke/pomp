@@ -38,7 +38,9 @@
         (state nil)
         (start 0)
         (position 0))
-    (handler-bind ((token (lambda (token) (funcall function (token token)))))
+    (handler-bind ((token (lambda (token)
+                            (funcall function (token token))
+                            (invoke-restart 'continue))))
       (labels ((prefix (ratio next-state)
                  (setf factor ratio)
                  (setf counter 0)
@@ -72,7 +74,8 @@
                  ;; handler-bind + signal so that errors that happen when
                  ;; calling function are not caught by the state-machine error
                  ;; handler below (handler-case).
-                 (signal 'token :token token)
+                 (restart-case (signal 'token :token token)
+                   (continue ()))
                  (setf start position)
                  (setf state #'state/%))
 
