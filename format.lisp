@@ -53,10 +53,11 @@
                        (lambda (char &aux (expected (pop stack)))
                          (assert (char= char expected)
                                  ()
-                                 "Unexpected char ~s in place of ~s~
+                                 "Unexpected char ~s in place of \"~a~{~a~}\"~
                                ~@[ ~a~]."
                                  char
                                  expected
+                                 stack
                                  (case token
                                    (:buffer
                                     "in buffer format (%p%u)")
@@ -120,7 +121,7 @@
         (loop
            initially (setf state #'state/%)
            for char across pomp-format-string
-           do (incf position)
+           do
              (handler-case (funcall state char)
                (error (condition)
                  ;; Any error caught here is a parsing error.
@@ -131,6 +132,7 @@
                   (list pomp-format-string
                         position)
                   condition)))
+             (incf position)
            finally
              (assert (eq state #'state/%)
                      ()
@@ -161,3 +163,11 @@
 (defun tokens (format &aux tokens)
   (do-tokens (token format (nreverse tokens))
     (push token tokens)))
+
+;; (tokens "%p%u%f%d%hhu")
+;; => ((:BUFFER) (:SINGLE) (:SIGNED 32) (:UNSIGNED 8))
+
+;; (mapcar #'token-as-types '((:BUFFER) (:SINGLE) (:SIGNED 32) (:UNSIGNED 8)))
+;; => (:BUFFER :SINGLE-FLOAT :SIGNED-ZIG-VARINT :UNSIGNED-BYTE)
+
+

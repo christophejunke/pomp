@@ -1,6 +1,5 @@
 (in-package :pomp)
 
-
 (assert (= 3 (let ((c 0))
                (do-tokens (nil "%d%u%hhd" c)
                  (incf c)))))
@@ -52,7 +51,7 @@
                      (argument :double-float pi)
                      (argument :file-descriptor 53)))
          (message (make-message 64 arguments)))
-    (multiple-value-bind (id args) (decode-message message)
+    (multiple-value-bind (args id) (decode-message message)
       (assert (equalp id 64))
       (assert (equalp args arguments))
       (assert (equalp (with-output-to-sequence (stream)
