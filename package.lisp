@@ -8,4 +8,12 @@
   (:import-from :flexi-streams
                 #:with-output-to-sequence
                 #:with-input-from-sequence)
-  (:export ))
+  (:export #:make-message
+           #:argument
+           #:ascii
+           #:buffer
+           #:pomp-message-id
+           #:decode-message
+           #:make-bytes
+           ;; TODO: add rest
+           ))
