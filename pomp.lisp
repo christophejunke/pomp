@@ -5,7 +5,7 @@
                     :bytes (make-bytes elements)))
 
 (defun ascii (string)
-  (make-str :size (1+ (length string)) :text string))
+  (make-pomp-ascii :size (1+ (length string)) :text string))
 
 (defun argument (type data)
   (make-pomp-argument :type type :data data))
