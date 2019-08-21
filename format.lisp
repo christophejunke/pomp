@@ -41,7 +41,9 @@
     (handler-bind ((token (lambda (token)
                             (funcall function (token token))
                             (invoke-restart 'continue))))
-      (labels ((prefix (ratio next-state)
+      (labels ( ;; HELPERS
+
+               (prefix (ratio next-state)
                  (setf factor ratio)
                  (setf counter 0)
                  (augment-prefix)
@@ -78,10 +80,16 @@
                  (restart-case (signal 'token :token token)
                    (continue ()))
                  (setf start position)
-                 (setf state #'state/%))
+                 (setf state #'state/wait-for-%))
 
                (size-for-prefix ()
                  (* size modifier))
+
+               (feed-fsm (char)
+                 (funcall state char)
+                 (incf position))
+
+               ;; STATE FUNCTIONS
 
                (state/dispatch (c)
                  (setf modifier 1)
@@ -114,30 +122,27 @@
                     (ecase counter
                       (1 (token :double))))))
 
-               (state/% (c)
+               (state/wait-for-% (c)
                  (ecase c
                    (#\%
                     (setf state #'state/dispatch)))))
         (loop
-           initially (setf state #'state/%)
+           initially (setf state #'state/wait-for-%)
            for char across pomp-format-string
-           do
-             (handler-case (funcall state char)
-               (error (condition)
-                 ;; Any error caught here is a parsing error.
-                 (error
-                  "~&Invalid character ~s in ~<~s at position ~d.~@:_~
-                ~:*~v@T ^~:>~%~a"
-                  char
-                  (list pomp-format-string
-                        position)
-                  condition)))
-             (incf position)
+           do (handler-case (feed-fsm char)
+                (error (condition)
+                  ;; Any error caught here is a parsing error.
+                  (error "~&Invalid character ~s in ~<~s at position ~d.~@:_~
+                          ~:*~v@T ^~:>~%~a"
+                         char
+                         (list pomp-format-string
+                               position)
+                         condition)))
            finally
-             (assert (eq state #'state/%)
+             (assert (eq state #'state/wait-for-%)
                      ()
                      "Not enough input for sequence ~s started at ~
-                    position ~d of ~s."
+                      position ~d of ~s."
                      (subseq pomp-format-string start)
                      start
                      pomp-format-string))))))
@@ -169,5 +174,3 @@
 
 ;; (mapcar #'token-as-types '((:BUFFER) (:SINGLE) (:SIGNED 32) (:UNSIGNED 8)))
 ;; => (:BUFFER :SINGLE-FLOAT :SIGNED-ZIG-VARINT :UNSIGNED-BYTE)
-
-
