@@ -47,9 +47,15 @@
    (decode-payload (pomp-message-payload message))
    (pomp-message-id message)))
 
-(declaim (inline encode-message))
+(declaim (inline pomp-write pomp-read))
 
-(defun encode-message (message &optional binary-stream)
+(defun pomp-read (in)
+  (typecase in
+    (vector (with-input-from-sequence (in in)
+              (read-binary-type 'pomp-message in)))
+    (stream (read-binary-type 'pomp-message in))))
+
+(defun pomp-write (message &optional binary-stream)
   (let ((stream (typecase binary-stream
                   (stream binary-stream)
                   ((eql t) *standard-output*))))

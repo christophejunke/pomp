@@ -13,7 +13,8 @@
            #:ascii
            #:buffer
            #:pomp-message-id
-           #:encode-message
+           #:pomp-read
+           #:pomp-write
            #:decode-message
            #:make-bytes
            ;; TODO: add rest
