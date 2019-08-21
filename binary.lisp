@@ -15,7 +15,7 @@
   :buffer             ; raw bytes.
   :single-float       ; 32-bit floating point, little endian, IEEE 754, data size is 4 bytes.
   :double-float       ; 64-bit floating point, little endian, IEEE 754, data size is 8 bytes.
-  :file-descriptor)   ; File descriptor, little endian, data size is 4 bytes.
+  :file-descriptor)   ; file descriptor, little endian, data size is 4 bytes.
 
 (defbinary pomp-message (:byte-order :little-endian)
   (magic +magic+ :type (magic :actual-type (fixed-length-string 4) :value +magic+))
