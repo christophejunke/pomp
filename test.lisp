@@ -19,7 +19,7 @@
     (print btype)
     (print ltype)))
 
-(defun test-varint ()
+(block test-varint
   (time
    (dotimes (i 10000)
      (let ((v (random #.(1- (expt 2 64)))))
@@ -35,7 +35,9 @@
                                     (%varint32e v out)))
          (assert (= v (%varint32d in))))))))
 
-(defun there-and-back-again ()
+
+
+(block there-and-back-again
   (let* ((id (random #xFFFFFFFF))
          (arguments (list
                      (argument :signed-byte 127)
