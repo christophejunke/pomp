@@ -47,3 +47,19 @@
    (decode-payload (pomp-message-payload message))
    (pomp-message-id message)))
 
+(declaim (inline encode-message))
+
+(defun encode-message (message &optional binary-stream)
+  (let ((stream (typecase binary-stream
+                  (stream binary-stream)
+                  ((eql t) *standard-output*))))
+    (values (if (and stream (subtypep (stream-element-type stream)
+                                      '(unsigned-byte 8)))
+                (write-binary message stream)
+                (let ((array 
+                       (with-output-to-sequence (o)
+                         (write-binary message o))))
+                  (if stream
+                      (prin1 array stream)
+                      array)))
+            message)))
