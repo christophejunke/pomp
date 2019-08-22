@@ -13,12 +13,13 @@
 			  (token-as-types token)
 			(let ((argument
 			       (or (pop arguments)
-				   (error "~@<Not enough arguments in ~a.~@:_~
-					   ~@(~:r~) token of type ~a has no ~
-					   associated argument.~:>"
-					  original
-					  index
-					  (first token)))))
+				   (error
+				    "~@<Not enough arguments in ~a.~@:_~
+ 				     ~@(~:r~) token of type ~a has no ~
+ 				     associated argument.~:>"
+				    original
+				    index
+				    (first token)))))
 			  (list argument
 				(make-argument-form pomp-type
 						    `(coerce ,argument
@@ -55,13 +56,16 @@
       (replace ()
 	:report "Replace known message for this identifier."))))
 
-(defmacro defpomp (name (&rest arguments) &key id format)
+(defmacro defpomp (name (&rest arguments) &key id (format ""))
+  `(progn (check-collision ',id ',name)
+	  (defpomp%% ,name (,@arguments) :id ,id :format ,format)))
+
+(defmacro defpomp%% (name (&rest arguments) &key id format)
   (check-type id (unsigned-byte 32))
   (with-gensyms (message body)
     (let ((with (symbolicate 'with- name)))
       `(progn
 	 (declaim (inline ,name))
-	 (check-collision ',id ',name)
 	 (setf (gethash ,id *pomp-messages*) ',name)
 	 ,(message-maker-form name id arguments format)
 	 (setf (get ',name 'pomp-metadata) ',with)
@@ -71,7 +75,7 @@
 
 ;; reusing constructor syntax as maching clauses
 ;; (which enables ElDoc for pattern matching).
-;; TODO: group messages by families
+;; TODO: group messages by families (package?)
 ;; (ids are unique in families, but not necessarily globally unique).
 ;; (alternatively: array of callback functions indexed by numeric id).
 ;; TODO: exhaustive check when matching on a family of messages
@@ -88,10 +92,11 @@
 		      (list name
 			    `(,with ,args ,message ,@body)))))))))
 
-(defmacro define-pomp-messages (&body body)
+(defmacro define-pomp-messages ((&optional family) &body body)
+  (declare (ignore family))
   (let ((counter 0)
 	(ids (make-hash-table)))
-    (flet ((args (name &key (id nil idp) format)
+    (flet ((parse (name &key (id nil idp) format)
 	     (if idp
 		 (setf counter id)
 		 (setf id counter))
@@ -102,7 +107,9 @@
 		 (error "Duplicate ID ~d for ~a and ~a."
 			id name existing))
 	       (setf (gethash id ids) name))))
-      `(list
-	,@(loop
-	     for (name args . rest) in body
-	     collect `(defpomp ,name ,args ,@(apply #'args name rest)))))))
+      (loop
+	 for (name args . rest) in body
+	 for plist = (apply #'parse name rest)
+	 collect `(defpomp%% ,name ,args ,@plist) into defs
+	 collect `(check-collision ',(getf plist :id) ',name) into chks
+	 finally (return `(progn ,@chks (list ,@defs)))))))

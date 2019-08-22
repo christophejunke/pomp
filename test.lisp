@@ -71,9 +71,11 @@
 		       12 24 45 68 84 251 33 9 64 13 53 0 0 0)))))))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (define-pomp-messages
+  (define-pomp-messages ()
     (ping (pid text) :format "%hu%s" :id 100)
     (pong (pid text) :format "%hu%s")))
+
+(defpomp test-msg () :id 1024)
 
 (let ((id0 42) (text0 "test"))
   (let ((ping (ping id0 text0)))
