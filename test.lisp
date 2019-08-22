@@ -35,8 +35,6 @@
                                     (%varint32e v out)))
          (assert (= v (%varint32d in))))))))
 
-
-
 (block there-and-back-again
   (let* ((id (random #xFFFFFFFF))
          (arguments (list
@@ -54,17 +52,44 @@
                      (argument :double-float pi)
                      (argument :file-descriptor 53)))
          (message (make-message id arguments)))
-    (multiple-value-bind (args id%) (decode-message message)
+    (multiple-value-bind (args id%) (pomp-decode message)
       (assert (equalp id% id))
       (assert (equalp args arguments))
-      (assert (equalp (with-output-to-sequence (stream)
-                        (write-binary (make-message id args) stream))
-                      (concatenate 'simple-vector
-                                   #(80 79 77 80)
-                                   (with-output-to-sequence (o)
-                                     (write-binary-type id '(unsigned-byte 32) o))
-                                   #(90 0 0 0 1 127 2 255 3 39 216 4 160 15 5
-                                     239 147 9 6 138 250 1 7 179 253 193 249 227 251 22 8 166 219
-                                     235 171 204 224 200 227 138 1 9 11 65 90 69 82 84 89 85 73 79
-                                     80 0 10 7 10 0 30 0 50 10 20 11 40 107 110 78 12 24 45 68 84
-                                     251 33 9 64 13 53 0 0 0)))))))
+      (assert 
+       (equalp 
+	(with-output-to-sequence (stream)
+          (write-binary (make-message id args) stream))
+        (concatenate 'simple-vector
+                     #(80 79 77 80)
+                     (with-output-to-sequence (o)
+                       (write-binary-type id '(unsigned-byte 32) o))
+                     #(90 0 0 0 1 127 2 255 3 39 216 4 160 15 5
+                       239 147 9 6 138 250 1 7 179 253 193 249 227 
+		       251 22 8 166 219 235 171 204 224 200 227 138 
+		       1 9 11 65 90 69 82 84 89 85 73 79
+                       80 0 10 7 10 0 30 0 50 10 20 11 40 107 110 78 
+		       12 24 45 68 84 251 33 9 64 13 53 0 0 0)))))))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (define-pomp-messages
+    (ping (pid text) :format "%hu%s" :id 100)
+    (pong (pid text) :format "%hu%s")))
+
+(let ((id0 42) (text0 "test"))
+  (let ((ping (ping id0 text0)))
+    (with-ping (pid text) ping
+      (let ((pong (pong pid text)))
+	(with-pong (pid text) pong
+	  (assert (= (pomp-message-id ping) 100))
+	  (assert (= (pomp-message-id pong) 101))
+	  (assert (= pid id0))
+	  (assert (string= text text0)))))))
+
+(assert (eq :ping
+	    (pomp-match (ping 1 "")
+	      ((ping id text)
+	       :ping)
+	      ((pong id text)
+	       :pong)
+	      (t :no))))
+

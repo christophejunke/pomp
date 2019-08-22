@@ -12,10 +12,16 @@
            #:argument
            #:ascii
            #:buffer
-           #:pomp-message-id
-           #:pomp-read
-           #:pomp-write
            #:decode-message
            #:make-bytes
-           ;; TODO: add rest
+	   #:define-pomp-messages
+           #:defpomp
+           #:pomp-message
+           #:pomp-message-id
+           #:pomp-read
+           #:pomp-id
+           #:pomp-handler
+           #:pomp-read
+           #:pomp-write
+	   #:pomp-match
            ))

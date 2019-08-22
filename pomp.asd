@@ -6,4 +6,6 @@
                (:file "encoding")
                (:file "binary")
                (:file "pomp")
-               (:file "format")))
+               (:file "format")
+	       (:file "defpomp")
+	       (:file "test")))

@@ -42,10 +42,16 @@
 (defun make-message (id arguments)
   (make-message-using-payload id (make-payload arguments)))
 
-(defun decode-message (message)
-  (values
-   (decode-payload (pomp-message-payload message))
-   (pomp-message-id message)))
+(defparameter *pomp-messages*
+  (make-hash-table))
+
+(defun pomp-id (message)
+  (let ((id (pomp-message-id message)))
+    (gethash id *pomp-messages* id)))
+
+(defun pomp-decode (message)
+  (values (decode-payload (pomp-message-payload message))
+	  (pomp-message-id message)))
 
 (declaim (inline pomp-write pomp-read))
 
