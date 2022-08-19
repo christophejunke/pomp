@@ -73,7 +73,8 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (define-pomp-messages ()
     (ping (pid text) :format "%hu%s" :id 100)
-    (pong (pid text) :format "%hu%s")))
+    (pong (pid text) :format "%hu%s")
+    (void ())))
 
 (defpomp test-msg () :id 1024)
 
@@ -94,3 +95,4 @@
 	      ((pong id text)
 	       :pong)
 	      (t :no))))
+

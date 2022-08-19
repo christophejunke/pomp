@@ -101,15 +101,16 @@
 		 (setf counter id)
 		 (setf id counter))
 	     (check-type id (unsigned-byte 32))
-	     (prog1 (list :format format :id id)
+	     (prog1 `(,@(and fp (list :format format))
+                      :id ,id)
 	       (incf counter)
 	       (when-let (existing (gethash id ids))
 		 (error "Duplicate ID ~d for ~a and ~a."
 			id name existing))
 	       (setf (gethash id ids) name))))
       (loop
-	 for (name args . rest) in body
-	 for plist = (apply #'parse name rest)
-	 collect `(defpomp%% ,name ,args ,@plist) into defs
-	 collect `(check-collision ',(getf plist :id) ',name) into chks
-	 finally (return `(progn ,@chks (list ,@defs)))))))
+	for (name args . rest) in body
+	for plist = (apply #'parse name rest)
+	collect `(defpomp%% ,name ,args ,@plist) into defs
+	collect `(check-collision ',(getf plist :id) ',name) into chks
+	finally (return `(progn ,@chks (list ,@defs)))))))
