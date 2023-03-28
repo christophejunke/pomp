@@ -19,6 +19,27 @@
     (print btype)
     (print ltype)))
 
+;; (with-input-from-sequence (in (mapcar (lambda (s) (parse-integer s :radix 16))
+;;                                       (ppcre:split '(:greedy-repetition 1 nil (:alternation #\space #\newline))
+;;                                                    "50 4f 4d 50 01 00 ef 60 41 00 00 00 0a 33 0a 31 
+;; 0a 0c 64 65 66 61 75 6c 74 2e 67 72 69 64 1a 21 
+;; 0a 1f 0d cd cc cc 3e 10 40 18 20 20 64 28 9c ff 
+;; ff ff ff ff ff ff ff 01 30 06 38 01 45 cd cc cc 
+;; 3f 50 4f 4d 50 01 00 ef 60 41 00 00 00 0a 33 0a 
+;; 31 0a 0c 64 65 66 61 75 6c 74 2e 67 72 69 64 1a 
+;; 21 0a 1f 0d cd cc cc 3e 10 40 18 20 20 64 28 9c 
+;; ff ff ff ff ff ff ff ff 01 30 06 38 01 45 cd cc")))
+;;   (read-binary 'pomp-message in))
+;;
+;; #S(POMP-MESSAGE
+;;    :MAGIC "POMP"
+;;    :ID 1626275841
+;;    :SIZE 65
+;;    :PAYLOAD #(10 51 10 49 10 12 100 101 102 97 117 108 116 46 103 114 105 100
+;;               26 33 10 31 13 205 204 204 62 16 64 24 32 32 100 40 156 255 255
+;;               255 255 255 255 255 255 1 48 6 56 1 69 205 204 204 63))
+;; 65
+
 (block test-varint
   (time
    (dotimes (i 10000)
