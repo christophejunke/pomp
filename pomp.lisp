@@ -49,9 +49,16 @@
   (let ((id (pomp-message-id message)))
     (gethash id *pomp-messages* id)))
 
+(defgeneric pomp-flatten (data)
+  (:method ((o pomp-argument)) (pomp-flatten (pomp-argument-data o)))
+  (:method ((o pomp-ascii)) (pomp-flatten (pomp-ascii-text o)))
+  (:method (o) o))
+
 (defun pomp-decode (message)
-  (values (decode-payload (pomp-message-payload message))
-	  (pomp-message-id message)))
+  (list* (pomp-id message)
+         (mapcar #'pomp-flatten
+                 (decode-payload
+                  (pomp-message-payload message)))))
 
 (declaim (inline pomp-write pomp-read))
 

@@ -185,8 +185,9 @@
        ,result)))
 
 (defun tokens (format &aux tokens)
-  (do-tokens (token format (nreverse tokens))
-    (push token tokens)))
+  (when format
+    (do-tokens (token format (nreverse tokens))
+      (push token tokens))))
 
 ;; (tokens "%p%u%f%d%hhu")
 ;; => ((:BUFFER) (:SINGLE) (:SIGNED 32) (:UNSIGNED 8))

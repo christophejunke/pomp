@@ -96,7 +96,7 @@
   (declare (ignore family))
   (let ((counter 0)
 	(ids (make-hash-table)))
-    (flet ((parse (name &key (id nil idp) format)
+    (flet ((parse (name &key (id nil idp) (format nil fp))
 	     (if idp
 		 (setf counter id)
 		 (setf id counter))
