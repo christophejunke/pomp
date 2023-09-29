@@ -64,7 +64,7 @@
 (defun pomp-write (message &optional binary-stream)
   (let ((stream (typecase binary-stream
                   (stream binary-stream)
-                  ((eql t) *standard-output*))))
+                  ((member nil t) *standard-output*))))
     (values (if (and stream (subtypep (stream-element-type stream)
                                       '(unsigned-byte 8)))
                 (write-binary message stream)

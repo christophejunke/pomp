@@ -5,6 +5,8 @@
 (deftype u8 () '(ub 8))
 (deftype fun (in out) `(function (,in) (values ,out &optional)))
 
+(defvar u8 'u8)
+
 (defun make-bytes (spec &optional fill-pointer)
   "Make a byte array based on SPEC with an optional FILL-POINTER.
 

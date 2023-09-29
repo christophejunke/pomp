@@ -24,4 +24,7 @@
            #:pomp-read
            #:pomp-write
 	   #:pomp-match
+           #:pomp-decode
+           #:ub
+           #:u8
            ))
