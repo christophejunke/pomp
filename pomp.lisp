@@ -55,10 +55,10 @@
   (:method (o) o))
 
 (defun pomp-decode (message)
-  (list* (pomp-id message)
-         (mapcar #'pomp-flatten
-                 (decode-payload
-                  (pomp-message-payload message)))))
+  (let ((payload (decode-payload (pomp-message-payload message))))
+    (values payload
+            (pomp-message-id message)
+            (mapcar #'pomp-flatten payload))))
 
 (declaim (inline pomp-write pomp-read))
 
